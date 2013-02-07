@@ -1,7 +1,7 @@
-Array to XML
+[PHP] Array to XML
 ============
 
-[PHP] - Array2xml is a PHP library that convers array to valid XML.
+Array2xml is a PHP library that convers array to valid XML.
 
 
 Installation
