@@ -3,6 +3,8 @@
 
 Array2xml is a PHP library that convers array to valid XML.
 
+Based on [XMLWriter](http://php.net/manual/en/book.xmlwriter.php).
+
 
 Installation
 ------------
