@@ -37,10 +37,16 @@ class Array2xml
     public function __construct($params = array())
     {
         if (is_array($params) and !empty($params))
-        {        	foreach ($params as $key => $param)
-        	{        		$attr = '_'.$key;
+        {
+        	foreach ($params as $key => $param)
+        	{
+        		$attr = '_'.$key;
         		if (property_exists($this, $attr))
-        		{        			$this->$attr = $param;        		}        	}        }
+        		{
+        			$this->$attr = $param;
+        		}
+        	}
+        }
 
         $this->writer = new XMLWriter();
     }
@@ -176,7 +182,9 @@ class Array2xml
      * @return	void
      */
     public function setNewLine($newLine)
-    {    	$this->newLine = (string)$newLine;    }
+    {
+    	$this->newLine = (string)$newLine;
+    }
 
     // --------------------------------------------------------------------
 
@@ -188,7 +196,9 @@ class Array2xml
      * @return	void
      */
     public function setNewTab($newTab)
-    {    	$this->newTab = (string)$newTab;    }
+    {
+    	$this->newTab = (string)$newTab;
+    }
 
     // --------------------------------------------------------------------
 
@@ -200,7 +210,9 @@ class Array2xml
      * @return	void
      */
     public function setNumericElement($numericElement)
-    {    	$this->numericElement = (string)$numericElement;    }
+    {
+    	$this->numericElement = (string)$numericElement;
+    }
 
     // --------------------------------------------------------------------
 
@@ -212,7 +224,9 @@ class Array2xml
      * @return	void
      */
     public function setSkipNumeric($skipNumeric)
-    {    	$this->skipNumeric = (bool)$skipNumeric;    }
+    {
+    	$this->skipNumeric = (bool)$skipNumeric;
+    }
 
     // --------------------------------------------------------------------
 
