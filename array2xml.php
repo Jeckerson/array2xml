@@ -228,7 +228,7 @@ class Array2xml
 	// --------------------------------------------------------------------
 
 	/**
-	 * Writing XML document by passing throught array
+	 * Writing XML document by passing through array
 	 *
 	 * @access    private
 	 * @param    array
