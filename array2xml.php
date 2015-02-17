@@ -59,7 +59,7 @@ class Array2xml
 	 * @param    array
 	 * @return    string
 	 */
-	public function convert($data)
+	public function convert($data = array())
 	{
 		$this->writer->openMemory();
 		$this->writer->startDocument($this->version, $this->encoding);
@@ -76,7 +76,7 @@ class Array2xml
 		{
 			$this->writer->text($this->newLine);
 
-			if (is_array($data))
+			if (is_array($data) AND ! empty($data))
 			{
 				$this->_getXML($data);
 			}
