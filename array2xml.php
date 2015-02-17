@@ -16,6 +16,7 @@ class Array2xml
 	private $encoding = 'UTF-8';
 	private $rootName = 'root';
 	private $rootAttrs = array();        //example: array('first_attr' => 'value_of_first_attr', 'second_atrr' => 'etc');
+	private $rootSelf = FALSE;
 	private $emelentsAttrs = array();        //example: $attrs['element_name'][] = array('attr_name' => 'attr_value');
 	private $CDataKeys = array();
 	private $newLine = "\n";
@@ -67,17 +68,18 @@ class Array2xml
 		{
 			foreach ($this->rootAttrs as $rootAttrName => $rootAttrText)
 			{
-				$this->writer->startAttribute($rootAttrName);
-				$this->writer->text($rootAttrText);
-				$this->writer->endAttribute();
+				$this->writer->writeAttribute($rootAttrName, $rootAttrText);
 			}
 		}
 
-		$this->writer->text($this->newLine);
-
-		if (is_array($data))
+		if ($this->rootSelf === FALSE)
 		{
-			$this->_getXML($data);
+			$this->writer->text($this->newLine);
+
+			if (is_array($data))
+			{
+				$this->_getXML($data);
+			}
 		}
 
 		$this->writer->endElement();
@@ -139,6 +141,20 @@ class Array2xml
 	public function setRootAttrs($rootAttrs)
 	{
 		$this->rootAttrs = (array)$rootAttrs;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set XML Root Self close
+	 *
+	 * @access    public
+	 * @param    bool
+	 * @return    void
+	 */
+	public function setRootSelf($rootSelf)
+	{
+		$this->rootSelf = (bool)$rootSelf;
 	}
 
 	// --------------------------------------------------------------------
