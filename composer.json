@@ -1,0 +1,12 @@
+{
+    "name": "dbrisinajumi/array2xml",
+    "description": "Array -> XML Converter Class",
+    "keywords": ["php","xml"],
+    "type": "library",
+    "license": "BSD-2-Clause",
+    "authors": [
+        {
+            "name": "Anton Vasylyev",
+        }
+    ]
+}
