@@ -24,6 +24,7 @@ class Array2xml
 	private $numericElement = 'key';
 	private $skipNumeric = TRUE;
 	private $_tabulation = TRUE;            //TODO
+    private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
 
 	/**
 	 * Constructor
@@ -241,6 +242,20 @@ class Array2xml
 		$this->skipNumeric = (bool)$skipNumeric;
 	}
 
+    // --------------------------------------------------------------------
+
+	/**
+	 * Tag For Numeric Array Keys
+	 *
+	 * @access    public
+	 * @param    string
+	 * @return    void
+	 */
+	public function setDefaultTagName($defaultTagName)
+	{
+		$this->defaultTagName = (string)$defaultTagName;
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
@@ -255,7 +270,11 @@ class Array2xml
 	{
 		foreach ($data as $key => $val)
 		{
-			if (is_numeric($key))
+			if (is_numeric($key) && $this->defaultTagName !== FALSE)
+            {
+                $key = $this->defaultTagName;
+            }
+            elseif (is_numeric($key))
 			{
 				if ($this->skipNumeric === TRUE)
 				{
@@ -317,7 +336,7 @@ class Array2xml
 			}
 			else
 			{
-				if ($val != NULL)
+				if ($val != NULL || $val === 0)
 				{
 					if (isset($this->CDataKeys[$key]))
 					{
