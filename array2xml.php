@@ -266,10 +266,11 @@ class Array2xml
 	 * @param    int
 	 * @return    void
 	 */
-	private function _getXML($data, $tabs_count = 0)
+	private function _getXML(&$data, $tabs_count = 0)
 	{
 		foreach ($data as $key => $val)
 		{
+            unset($data[$key]);
 			if (is_numeric($key) && $this->defaultTagName !== FALSE)
             {
                 $key = $this->defaultTagName;
