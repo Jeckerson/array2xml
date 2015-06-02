@@ -17,7 +17,7 @@ class Array2xml
 	private $rootName = 'root';
 	private $rootAttrs = array();        //example: array('first_attr' => 'value_of_first_attr', 'second_atrr' => 'etc');
 	private $rootSelf = FALSE;
-	private $emelentsAttrs = array();        //example: $attrs['element_name'][] = array('attr_name' => 'attr_value');
+	private $elementAttrs = array();        //example: $attrs['element_name'][] = array('attr_name' => 'attr_value');
 	private $CDataKeys = array();
 	private $newLine = "\n";
 	private $newTab = "\t";
@@ -25,6 +25,7 @@ class Array2xml
 	private $skipNumeric = TRUE;
 	private $_tabulation = TRUE;            //TODO
     private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
+	private $rawKeys = array();
 
 	/**
 	 * Constructor
@@ -181,9 +182,23 @@ class Array2xml
 	 * @param    array
 	 * @return    void
 	 */
-	public function setCDataKeys($CDataKeys)
+	public function setCDataKeys(array $CDataKeys)
 	{
-		$this->CDataKeys = (array)$CDataKeys;
+		$this->CDataKeys = $CDataKeys;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 * Set keys of array that needed to be as Raw XML in XML document
+	 *
+	 * @access    public
+	 * @param     array
+	 * @return    void
+	 */
+	public function setRawKeys(array $rawKeys)
+	{
+		$this->rawKeys = $rawKeys;
 	}
 
 	// --------------------------------------------------------------------
@@ -271,6 +286,7 @@ class Array2xml
 		foreach ($data as $key => $val)
 		{
             unset($data[$key]);
+			if(substr($key, 0,1) == '@') continue;
 			if (is_numeric($key) && $this->defaultTagName !== FALSE)
             {
                 $key = $this->defaultTagName;
@@ -307,10 +323,16 @@ class Array2xml
 				$this->writer->startElement($key);
 
 				// Check if there are some attributes
-				if (isset($this->emelentsAttrs[$key]))
+				if (isset($this->elementAttrs[$key]) || isset($val['@attributes']))
 				{
+					if(isset($val['@attributes']) && is_array($val['@attributes'])){
+						$attributes = $val['@attributes'];
+					}else{
+						$attributes = $this->elementAttrs[$key];
+					}
+
 					// Yeah, lets add them
-					foreach ($this->emelentsAttrs[$key] as $elementAttrName => $elementAttrText)
+					foreach ($attributes as $elementAttrName => $elementAttrText)
 					{
 						$this->writer->startAttribute($elementAttrName);
 						$this->writer->text($elementAttrText);
