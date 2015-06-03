@@ -286,7 +286,13 @@ class Array2xml
 		foreach ($data as $key => $val)
 		{
             unset($data[$key]);
-			if(substr($key, 0,1) == '@') continue;
+
+			// Skip attribute param
+			if (substr($key, 0, 1) == '@')
+			{
+				continue;
+			}
+
 			if (is_numeric($key) && $this->defaultTagName !== FALSE)
             {
                 $key = $this->defaultTagName;
@@ -325,9 +331,12 @@ class Array2xml
 				// Check if there are some attributes
 				if (isset($this->elementAttrs[$key]) || isset($val['@attributes']))
 				{
-					if(isset($val['@attributes']) && is_array($val['@attributes'])){
+					if (isset($val['@attributes']) && is_array($val['@attributes']))
+					{
 						$attributes = $val['@attributes'];
-					}else{
+					}
+					else
+					{
 						$attributes = $this->elementAttrs[$key];
 					}
 
