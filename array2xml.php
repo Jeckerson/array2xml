@@ -365,6 +365,9 @@ class Array2xml
 					{
 						$this->writer->writeCData($val);
 					}
+					elseif(isset($this->rawKeys[$key])){
+						$this->writer->writeRaw($val);
+					}
 					else
 					{
 						$this->writer->text($val);
