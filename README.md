@@ -44,9 +44,9 @@ You can also set element attributes individually like this:
 	
 	$data['channel'][$key]['item']['@attributes'] 		= array('AttributeName' => $attributeValue);
 	
-Alternatively, you can use setElementAttrs() method:
+Alternatively, you can use setElementsAttrs() method:
 
-	$array2xml->setElementAttrs( array('ElementName' => array('AttributeName' => $attributeValue) ));
+	$array2xml->setElementsAttrs( array('ElementName' => array('AttributeName' => $attributeValue) ));
 
 Note that in this case all elements with specified name will have identical attribute names and values.
 
