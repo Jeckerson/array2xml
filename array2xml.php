@@ -24,8 +24,14 @@ class Array2xml
 	private $numericElement = 'key';
 	private $skipNumeric = TRUE;
 	private $_tabulation = TRUE;            //TODO
-    private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
+	private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
 	private $rawKeys = array();
+	private $emptyElementSyntax = 1;
+
+
+
+	const EMPTY_SELF_CLOSING = 1;
+	const EMPTY_FULL  		 = 2;
 
 	/**
 	 * Constructor
@@ -168,9 +174,9 @@ class Array2xml
 	 * @param    array
 	 * @return    void
 	 */
-	public function setElementsAttrs($emelentsAttrs)
+	public function setElementsAttrs(array $elementAttrs)
 	{
-		$this->emelentsAttrs = (array)$emelentsAttrs;
+		$this->elementAttrs = $elementAttrs;
 	}
 
 	// --------------------------------------------------------------------
@@ -178,9 +184,9 @@ class Array2xml
 	/**
 	 * Set keys of array that needed to be as CData in XML document
 	 *
-	 * @access    public
+	 * @access   public
 	 * @param    array
-	 * @return    void
+	 * @return   void
 	 */
 	public function setCDataKeys(array $CDataKeys)
 	{
@@ -257,7 +263,7 @@ class Array2xml
 		$this->skipNumeric = (bool)$skipNumeric;
 	}
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Tag For Numeric Array Keys
@@ -269,6 +275,21 @@ class Array2xml
 	public function setDefaultTagName($defaultTagName)
 	{
 		$this->defaultTagName = (string)$defaultTagName;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *  Set preferred syntax of empty elements.
+	 *  <element></element> or self-closing <element/>
+	 *
+	 * @access    public
+	 * @param     string
+	 * @return    void
+	 */
+	public function setEmptyElementSyntax($syntax)
+	{
+		$this->emptyElementSyntax = $syntax;
 	}
 
 	// --------------------------------------------------------------------
@@ -294,10 +315,10 @@ class Array2xml
 			}
 
 			if (is_numeric($key) && $this->defaultTagName !== FALSE)
-            {
-                $key = $this->defaultTagName;
-            }
-            elseif (is_numeric($key))
+			{
+				$key = $this->defaultTagName;
+			}
+			elseif (is_numeric($key))
 			{
 				if ($this->skipNumeric === TRUE)
 				{
@@ -331,12 +352,9 @@ class Array2xml
 				// Check if there are some attributes
 				if (isset($this->elementAttrs[$key]) || isset($val['@attributes']))
 				{
-					if (isset($val['@attributes']) && is_array($val['@attributes']))
-					{
+					if(isset($val['@attributes']) && is_array($val['@attributes'])){
 						$attributes = $val['@attributes'];
-					}
-					else
-					{
+					}else{
 						$attributes = $this->elementAttrs[$key];
 					}
 
@@ -370,17 +388,22 @@ class Array2xml
 			{
 				if ($val != NULL || $val === 0)
 				{
-					if (isset($this->CDataKeys[$key]))
+					if (isset($this->CDataKeys[$key]) || array_search($key, $this->CDataKeys)!==false)
 					{
 						$this->writer->writeCData($val);
 					}
-					elseif(isset($this->rawKeys[$key])){
+					elseif(array_search($key, $this->rawKeys) !== false)
+					{
 						$this->writer->writeRaw($val);
 					}
 					else
 					{
 						$this->writer->text($val);
 					}
+				}
+				elseif($this->emptyElementSyntax === self::EMPTY_FULL)
+				{
+					$this->writer->text('');
 				}
 			}
 
@@ -393,3 +416,4 @@ class Array2xml
 	}
 }
 //END Array to Xml Class
+
