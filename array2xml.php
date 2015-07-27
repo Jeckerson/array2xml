@@ -375,7 +375,8 @@ class Array2xml
 				}
 			}
 
-			if($this->filterNumbers === TRUE || in_array(preg_replace('#[0-9]*#', '', $key), $this->tagsToFilter))
+			if($this->filterNumbers === TRUE
+				|| in_array(preg_replace('#[0-9]*#', '', $key), $this->tagsToFilter))
 			{
 				//remove numbers
 				$key = preg_replace('#[0-9]*#', '', $key);
@@ -411,7 +412,11 @@ class Array2xml
 						$this->writer->endAttribute();
 					}
 
-					if(!empty($val['@content']) && is_string($val['@content']) && isset($val['@attributes']))
+					if(
+						!empty($val['@content'])
+						&& is_string($val['@content'])
+						&& isset($val['@attributes'])
+					)
 					{
 						$val = $val['@content'];
 					}
@@ -439,7 +444,8 @@ class Array2xml
 			{
 				if ($val != NULL || $val === 0)
 				{
-					if (isset($this->CDataKeys[$key]) || array_search($key, $this->CDataKeys) !== FALSE)
+					if (isset($this->CDataKeys[$key])
+						|| array_search($key, $this->CDataKeys) !== FALSE)
 					{
 						$this->writer->writeCData($val);
 					}
