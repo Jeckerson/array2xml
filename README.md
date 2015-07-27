@@ -79,26 +79,26 @@ Configuration
 
 You can easily configure this lib to fit your specific use case using setters described below.
 
-### setVersion(string $version)
+#### setVersion(string $version)
 Sets XML version header.
-### setEncoding(string $encoding)
+#### setEncoding(string $encoding)
 Sets XML encoding
-### setRootName(string $rootName)
+#### setRootName(string $rootName)
 Set XML Root Element Name 
-### setRootAttrs(array $rootAttrs)
+#### setRootAttrs(array $rootAttrs)
 Set XML Root Element Attributes
-### setElementsAttrs(array $attrs)
+#### setElementsAttrs(array $attrs)
 Set Attributes of every XML Elements that matches the given names.
 Example argument: `['elementName' => ['someAttr' => 'attrValue']]`
-### setCDataKeys(array $elementNames)
+#### setCDataKeys(array $elementNames)
 Marking given elements as CData ones
-### setRawKeys(array $elementNames)
+#### setRawKeys(array $elementNames)
 Marking given elements as raw ones
-### setNumericTagPrefix(string $prefix)
+#### setNumericTagPrefix(string $prefix)
 Set default prefix for numeric nodes
-### setSkipNumeric(bool $skipNumeric)
+#### setSkipNumeric(bool $skipNumeric)
 On/Off Skip numeric nodes
-### setEmptyElementSyntax(const)
+#### setEmptyElementSyntax(const)
 In some cases you might want to control the exact syntax of empty elements.
 
 By default, nodes that are empty or equal to null are using self-closing syntax(`<foo/>`).
@@ -107,7 +107,7 @@ You can override this behavior using `Array2xml::EMPTY_FULL` to force using clos
 
 Available agruments are `Array2xml::EMPTY_SELF_CLOSING` or `Array2xml::EMPTY_FULL`
 
-### setFilterNumbersInTags(bool|array $data)
+#### setFilterNumbersInTags(bool|array $data)
 Remove numbers from element names.
 
 Possible args are: 
