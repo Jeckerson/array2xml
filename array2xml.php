@@ -32,8 +32,8 @@ class Array2xml
 
 
 
-	const EMPTY_SELF_CLOSING	= 1;
-	const EMPTY_FULL			= 2;
+	const EMPTY_SELF_CLOSING    = 1;
+	const EMPTY_FULL            = 2;
 
 
 	/**
