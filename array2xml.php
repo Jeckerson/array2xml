@@ -30,8 +30,6 @@ class Array2xml
 	private $filterNumbers = FALSE;
 	private $tagsToFilter = array();
 
-
-
 	const EMPTY_SELF_CLOSING    = 1;
 	const EMPTY_FULL            = 2;
 
@@ -70,7 +68,7 @@ class Array2xml
 	 * @param    array
 	 * @return    string
 	 */
-	public function convert($data = array())
+	public function convert(array $data)
 	{
 		$this->writer->openMemory();
 		$this->writer->startDocument($this->version, $this->encoding);
@@ -369,7 +367,7 @@ class Array2xml
 						}
 					}
 
-					$key = FALSE;
+					continue;
 				}
 				else
 				{
@@ -395,9 +393,12 @@ class Array2xml
 				// Check if there are some attributes
 				if (isset($this->elementAttrs[$key]) || isset($val['@attributes']))
 				{
-					if(isset($val['@attributes']) && is_array($val['@attributes'])){
+					if(isset($val['@attributes']) && is_array($val['@attributes']))
+					{
 						$attributes = $val['@attributes'];
-					}else{
+					}
+					else
+					{
 						$attributes = $this->elementAttrs[$key];
 					}
 
@@ -408,6 +409,11 @@ class Array2xml
 						$this->writer->startAttribute($elementAttrName);
 						$this->writer->text($elementAttrText);
 						$this->writer->endAttribute();
+					}
+
+					if(!empty($val['@content']) && is_string($val['@content']) && isset($val['@attributes']))
+					{
+						$val = $val['@content'];
 					}
 
 				}
