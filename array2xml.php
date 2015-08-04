@@ -21,11 +21,18 @@ class Array2xml
 	private $CDataKeys = array();
 	private $newLine = "\n";
 	private $newTab = "\t";
-	private $numericElement = 'key';
+	private $numericTagPrefix = 'key';
 	private $skipNumeric = TRUE;
 	private $_tabulation = TRUE;            //TODO
-    private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
+	private $defaultTagName = FALSE;    //Tag For Numeric Array Keys
 	private $rawKeys = array();
+	private $emptyElementSyntax = 1;
+	private $filterNumbers = FALSE;
+	private $tagsToFilter = array();
+
+	const EMPTY_SELF_CLOSING    = 1;
+	const EMPTY_FULL            = 2;
+
 
 	/**
 	 * Constructor
@@ -48,7 +55,7 @@ class Array2xml
 			}
 		}
 
-		$this->writer = new XMLWriter();
+		$this->writer = new \XMLWriter();
 	}
 
 	// --------------------------------------------------------------------
@@ -61,7 +68,7 @@ class Array2xml
 	 * @param    array
 	 * @return    string
 	 */
-	public function convert($data = array())
+	public function convert(array $data)
 	{
 		$this->writer->openMemory();
 		$this->writer->startDocument($this->version, $this->encoding);
@@ -73,6 +80,7 @@ class Array2xml
 				$this->writer->writeAttribute($rootAttrName, $rootAttrText);
 			}
 		}
+
 
 		if ($this->rootSelf === FALSE)
 		{
@@ -140,9 +148,9 @@ class Array2xml
 	 * @param    array
 	 * @return    void
 	 */
-	public function setRootAttrs($rootAttrs)
+	public function setRootAttrs(array $rootAttrs)
 	{
-		$this->rootAttrs = (array)$rootAttrs;
+		$this->rootAttrs = $rootAttrs;
 	}
 
 	// --------------------------------------------------------------------
@@ -168,9 +176,9 @@ class Array2xml
 	 * @param    array
 	 * @return    void
 	 */
-	public function setElementsAttrs($emelentsAttrs)
+	public function setElementsAttrs(array $elementAttrs)
 	{
-		$this->emelentsAttrs = (array)$emelentsAttrs;
+		$this->elementAttrs = $elementAttrs;
 	}
 
 	// --------------------------------------------------------------------
@@ -232,15 +240,15 @@ class Array2xml
 	// --------------------------------------------------------------------
 
 	/**
-	 * Set Default Numeric Element
+	 * Set Default Numeric Tag Prefix
 	 *
 	 * @access    public
 	 * @param    string
 	 * @return    void
 	 */
-	public function setNumericElement($numericElement)
+	public function setNumericTagPrefix($numericTagPrefix)
 	{
-		$this->numericElement = (string)$numericElement;
+		$this->numericTagPrefix = (string)$numericTagPrefix;
 	}
 
 	// --------------------------------------------------------------------
@@ -257,7 +265,7 @@ class Array2xml
 		$this->skipNumeric = (bool)$skipNumeric;
 	}
 
-    // --------------------------------------------------------------------
+	// --------------------------------------------------------------------
 
 	/**
 	 * Tag For Numeric Array Keys
@@ -274,6 +282,51 @@ class Array2xml
 	// --------------------------------------------------------------------
 
 	/**
+	 *  Set preferred syntax of empty elements.
+	 *  <element></element> or self-closing <element/>
+	 *
+	 * @access   public
+	 * @param    const Array2xml::EMPTY_SELF_CLOSING or Array2xml::EMPTY_FULL
+	 * @return   void
+	 */
+	public function setEmptyElementSyntax($syntax)
+	{
+		$this->emptyElementSyntax = $syntax;
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
+	 *  Remove numbers from tag names.
+	 *  Useful if you need to have identically named elements in your XML
+	 *
+	 *  You can pass either boolean TRUE to remove numbers from ALL tags
+	 *  or pass an ARRAY with element names in it(without numbers)
+	 *  to filter only specific elements.
+	 *
+	 * @access   public
+	 * @param    bool|array
+	 * @return   void
+	 */
+	public function setFilterNumbersInTags($data)
+	{
+		if(is_bool($data))
+		{
+			$this->filterNumbers = $data;
+		}
+		elseif(is_array($data))
+		{
+			$this->tagsToFilter = $data;
+		}
+		else
+		{
+			throw new \InvalidArgumentException('$data must be a type of boolean or array');
+		}
+	}
+
+	// --------------------------------------------------------------------
+
+	/**
 	 * Writing XML document by passing through array
 	 *
 	 * @access    private
@@ -283,9 +336,10 @@ class Array2xml
 	 */
 	private function _getXML(&$data, $tabs_count = 0)
 	{
+
 		foreach ($data as $key => $val)
 		{
-            unset($data[$key]);
+			unset($data[$key]);
 
 			// Skip attribute param
 			if (substr($key, 0, 1) == '@')
@@ -293,13 +347,13 @@ class Array2xml
 				continue;
 			}
 
-			if (is_numeric($key) && $this->defaultTagName !== FALSE)
-            {
-                $key = $this->defaultTagName;
-            }
-            elseif (is_numeric($key))
+			if (is_numeric($key))
 			{
-				if ($this->skipNumeric === TRUE)
+				if($this->defaultTagName !== FALSE)
+				{
+					$key = $this->defaultTagName;
+				}
+				elseif($this->skipNumeric === TRUE)
 				{
 					if (!is_array($val))
 					{
@@ -313,17 +367,26 @@ class Array2xml
 						}
 					}
 
-					$key = FALSE;
+					continue;
 				}
 				else
 				{
-					$key = $this->numericElement . $key;
+					$key = $this->numericTagPrefix . $key;
 				}
 			}
+
+			if($this->filterNumbers === TRUE
+				|| in_array(preg_replace('#[0-9]*#', '', $key), $this->tagsToFilter))
+			{
+				//remove numbers
+				$key = preg_replace('#[0-9]*#', '', $key);
+			}
+
 
 			if ($key !== FALSE)
 			{
 				$this->writer->text(str_repeat($this->newTab, $tabs_count));
+
 
 				// Write element tag name
 				$this->writer->startElement($key);
@@ -331,7 +394,7 @@ class Array2xml
 				// Check if there are some attributes
 				if (isset($this->elementAttrs[$key]) || isset($val['@attributes']))
 				{
-					if (isset($val['@attributes']) && is_array($val['@attributes']))
+					if(isset($val['@attributes']) && is_array($val['@attributes']))
 					{
 						$attributes = $val['@attributes'];
 					}
@@ -340,6 +403,7 @@ class Array2xml
 						$attributes = $this->elementAttrs[$key];
 					}
 
+
 					// Yeah, lets add them
 					foreach ($attributes as $elementAttrName => $elementAttrText)
 					{
@@ -347,6 +411,16 @@ class Array2xml
 						$this->writer->text($elementAttrText);
 						$this->writer->endAttribute();
 					}
+
+					if(
+						!empty($val['@content'])
+						&& is_string($val['@content'])
+						&& isset($val['@attributes'])
+					)
+					{
+						$val = $val['@content'];
+					}
+
 				}
 			}
 
@@ -370,17 +444,22 @@ class Array2xml
 			{
 				if ($val != NULL || $val === 0)
 				{
-					if (isset($this->CDataKeys[$key]))
+					if (isset($this->CDataKeys[$key])
+						|| array_search($key, $this->CDataKeys) !== FALSE)
 					{
 						$this->writer->writeCData($val);
 					}
-					elseif(isset($this->rawKeys[$key])){
+					elseif(array_search($key, $this->rawKeys) !== false)
+					{
 						$this->writer->writeRaw($val);
 					}
 					else
 					{
 						$this->writer->text($val);
 					}
+				}elseif($this->emptyElementSyntax === self::EMPTY_FULL)
+				{
+					$this->writer->text('');
 				}
 			}
 
