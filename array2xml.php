@@ -404,7 +404,7 @@ class Array2xml
 						$this->writer->endAttribute();
 					}
 
-					if ( ! empty($val['@content']) && is_string($val['@content']) && isset($val['@attributes']))
+					if ( isset($val['@content']) && is_string($val['@content']) && isset($val['@attributes']))
 					{
 						$val = $val['@content'];
 					}

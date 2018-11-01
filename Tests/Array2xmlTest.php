@@ -194,6 +194,16 @@ class Array2xmlTest extends PHPUnit_Framework_TestCase {
         $this->execute($expected, $actual);
     }
 
+    public function testElementAttrsDynamicZeroContent(){
+        $actual = array(
+            'foo' => array('@content' => '0', '@attributes' => array('test' => 'true')),
+            'bar' => 'Text'
+        );
+        $expected = '<root><foo test="true">0</foo><bar>Text</bar></root>';
+
+        $this->execute($expected, $actual);
+    }
+
     public function testRootAttrs(){
 
         $actual = array('foo' => 'text');
