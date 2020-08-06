@@ -37,8 +37,6 @@ class Array2xmlTest extends TestCase
         $expected->preserveWhiteSpace = false;
         $expected->loadXML($expected_xml);
 
-        var_dump($actual_xml); exit;
-
         $this->assertEqualXML($expected->firstChild, $actual->firstChild, true);
         $this->assertEquals($expected, $actual);
     }
