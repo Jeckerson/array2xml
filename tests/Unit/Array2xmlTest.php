@@ -37,9 +37,9 @@ class Array2xmlTest extends TestCase
         $expected->preserveWhiteSpace = false;
         $expected->loadXML($expected_xml);
 
-        $this->assertEqualXML(
-            $expected->firstChild, $actual->firstChild, true
-        );
+        var_dump($actual_xml); exit;
+
+        $this->assertEqualXML($expected->firstChild, $actual->firstChild, true);
         $this->assertEquals($expected, $actual);
     }
 
@@ -309,6 +309,47 @@ class Array2xmlTest extends TestCase
         $this->assertEqualXML(
             $expected->firstChild, $actual->firstChild, true
         );
+    }
+
+    public function testNestedChildrenWithDefaultTagName()
+    {
+        $this->array2xml->setDefaultTagName('fi2order_class');
+
+        $actual = [
+            'fi2order_class' => [
+                [
+                    'fi2class_code' => 999,
+                    'fi2class_scheme' => [
+                        'fi2scheme_id' => 'Class_Fi2OrderClass_01',
+                    ],
+                ],
+                [
+                    'fi2class_code' => 3,
+                    'fi2class_scheme' => [
+                        'fi2scheme_id' => 'Class_Fi2OrderPriorityClass_01',
+                    ],
+                ]
+            ],
+        ];
+
+        $expected = <<<XML
+<root>
+    <fi2order_class>
+        <fi2class_code>999</fi2class_code>
+        <fi2class_scheme>
+            <fi2scheme_id>Class_Fi2OrderClass_01</fi2scheme_id>
+        </fi2class_scheme>
+    </fi2order_class>
+    <fi2order_class>
+        <fi2class_code>3</fi2class_code>
+        <fi2class_scheme>
+            <fi2scheme_id>Class_Fi2OrderPriorityClass_01</fi2scheme_id>
+        </fi2class_scheme>
+    </fi2order_class>
+</root>
+XML;
+
+        $this->execute($expected, $actual);
     }
 
     /**
