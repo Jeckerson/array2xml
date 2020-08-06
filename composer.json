@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=5.4",
         "ext-xmlwriter": "*"
     },
     "require-dev": {
