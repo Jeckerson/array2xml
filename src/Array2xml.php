@@ -1,13 +1,13 @@
 <?php
 
+namespace AnVas;
+
 /**
  * Array -> XML Converter Class
  * Convert array to clean XML
  *
  * @category       Libraries
- * @author         Anton Vasylyev
- * @link           http://truecoder.name
- * @version        1.3
+ * @author         Anton Vasiliev
  */
 class Array2xml
 {
